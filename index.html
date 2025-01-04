@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer with Reminders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .timer {
+            font-size: 2rem;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>1 Hour 45 Minute Timer</h1>
+    <div class="timer">
+        <p>Time Left: <span id="time-left">1:45:00</span></p>
+        <p>Time Elapsed: <span id="time-elapsed">0:00:00</span></p>
+    </div>
+    <button id="start-button">Start</button>
+
+    <audio id="1hour3reminder" src="1hour3reminder.mp3"></audio>
+    <audio id="1hourreminder" src="1hourreminder.mp3"></audio>
+    <audio id="30minreminder" src="30minreminder.mp3"></audio>
+    <audio id="15minreminder" src="15minreminder.mp3"></audio>
+    <audio id="5minreminder" src="5minreminder.mp3"></audio>
+    <audio id="finishedreminder" src="finishedreminder.mp3"></audio>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const timeLeftElement = document.getElementById('time-left');
+        const timeElapsedElement = document.getElementById('time-elapsed');
+
+        let timerInterval;
+        const totalTime = 105 * 60; // 1 hour 45 minutes in seconds
+        let elapsedTime = 0;
+
+        const reminders = {
+            5400: '1hour3reminder',   // 1:30:00 left
+            3600: '1hourreminder',    // 1:00:00 left
+            1800: '30minreminder',    // 0:30:00 left
+            900: '15minreminder',     // 0:15:00 left
+            300: '5minreminder',      // 0:05:00 left
+            0: 'finishedreminder'     // 0:00:00 left
+        };
+
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function playReminder(audioId) {
+            const audio = document.getElementById(audioId);
+            if (audio) audio.play();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+
+            timerInterval = setInterval(() => {
+                elapsedTime++;
+                const timeLeft = totalTime - elapsedTime;
+
+                timeLeftElement.textContent = formatTime(timeLeft);
+                timeElapsedElement.textContent = formatTime(elapsedTime);
+
+                if (reminders[timeLeft] !== undefined) {
+                    playReminder(reminders[timeLeft]);
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        startButton.addEventListener('click', startTimer);
+    </script>
+</body>
+</html>
